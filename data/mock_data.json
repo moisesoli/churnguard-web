@@ -1,0 +1,102 @@
+{
+  "perfis": [
+    {
+      "id": 1,
+      "nome": "Admin",
+      "descricao": "Administrador tem acesso total do sistema"
+    },
+    {
+      "id": 2,
+      "nome": "Gestor",
+      "descricao": "Gestor apenas gere contas e ações de retenção"
+    }
+  ],
+  "utilizadores": [
+    {
+      "id": 1,
+      "perfil_id": 1,
+      "nome": "Administrador Geral",
+      "email": "admin@churnguard.com",
+      "password": "123",
+      "ativo": true
+    },
+    {
+      "id": 2,
+      "perfil_id": 2,
+      "nome": "Moisés Oliveira",
+      "email": "moises@churnguard.com",
+      "password": "123",
+      "ativo": true
+    }
+  ],
+  "clientes": [
+    {
+      "id": 101,
+      "nome_empresa": "Amazon Prime",
+      "plano": "Enterprise",
+      "ativo": true
+    },
+    {
+      "id": 102,
+      "nome_empresa": "Chess.com",
+      "plano": "Pro",
+      "ativo": true
+    },
+    {
+      "id": 103,
+      "nome_empresa": "Netflix",
+      "plano": "Enterprise",
+      "ativo": true
+    },
+    {
+      "id": 104,
+      "nome_empresa": "Spotify",
+      "plano": "Básico",
+      "ativo": true
+    }
+  ],
+  "diagnosticos": [
+    {
+      "id": 1,
+      "cliente_id": 101,
+      "tempo_uso_min": 39,
+      "tickets_erro": 5,
+      "avaliacao_csat": 2,
+      "churn_score": 88.5,
+      "nivel_risco": "Crítico",
+      "recomendacao": "Agendar reunião técnica e oferecer voucher de 20%."
+    },
+    {
+      "id": 2,
+      "cliente_id": 102,
+      "tempo_uso_min": 54,
+      "tickets_erro": 3,
+      "avaliacao_csat": 3,
+      "churn_score": 64.2,
+      "nivel_risco": "Médio",
+      "recomendacao": "Enviar convite para sessão de formação."
+    },
+    {
+      "id": 3,
+      "cliente_id": 103,
+      "tempo_uso_min": 215,
+      "tickets_erro": 0,
+      "avaliacao_csat": 5,
+      "churn_score": 11.0,
+      "nivel_risco": "Baixo",
+      "recomendacao": "Manter acompanhamento regular."
+    },
+    {
+      "id": 4,
+      "cliente_id": 104,
+      "tempo_uso_min": 22,
+      "tickets_erro": 4,
+      "avaliacao_csat": 1,
+      "churn_score": 92.0,
+      "nivel_risco": "Crítico",
+      "recomendacao": "Contacto telefónico imediato."
+    }
+  ],
+  "acoes_retencao": [],
+  "logs_interacao": []
+}
