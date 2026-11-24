@@ -1,105 +1,112 @@
-// Nomes das chaves
+// Key names we will use in the browser's storage
 const DB_KEY = 'churnguard_db';
-const SESSION_KEY = 'churnguard_sessao';
+const SESSION_KEY = 'churnguard_session';
 
-// Função assíncrona para carregar o ficheiro JSON para o localStorage
+/**
+ * Asynchronous function to load the JSON file into localStorage.
+ * Only fetches the first time; on subsequent visits it reads directly from localStorage
+ * so we don't lose changes made in the application.
+ */
+async function loadDatabase() {
+    // Checks if a saved copy already exists in the browser
+    const savedData = localStorage.getItem(DB_KEY);
 
-async function carregarBaseDeDados() {
+    if (!savedData) {
+        // If it doesn't exist, fetches the JSON file from the data/ folder
+        const response = await fetch('data/mock_data.json');
+        const jsonData = await response.json();
 
-    //Verifica se já existe uma cópia guardada no navegador
-    const dadosGuardados = localStorage.getItem(DB_KEY);
-
-    if(!dadosGuardados){
-        // Se não existir, vai buscar o ficheiro JSON à pasta data/
-        const resposta = await fetch('data/mock_data.json');
-        const dadosJSON = await resposta.json();
-
-        // Converter o objeto JavaScript em texto e guarda no localStorage
-        localStorage.setItem(DB_KEY, JSON.stringify(dadosJSON));
-        return dadosJSON;   
+        // Converts the JavaScript object into text and saves it in localStorage
+        localStorage.setItem(DB_KEY, JSON.stringify(jsonData));
+        return jsonData;
     }
 
-    // Se já existir, converte o texto de volta para objeto JavaScript
-    return JSON.parse(dadosGuardados);
+    // If it already exists, converts the text back into a JavaScript object
+    return JSON.parse(savedData);
 }
 
-// Função chamada pelos botões de "Preenchimento rápido" no HTML
-function preencherDemo(emailDemo){
-    document.getElementById('email').value = emailDemo;
+
+// Function called by the "Quick fill" buttons in HTML.
+function fillDemo(demoEmail) {
+    document.getElementById('email').value = demoEmail;
     document.getElementById('password').value = '123';
 }
 
-// Lógica do formulário de Login
-const formLogin = document.getElementById('form-login');
+/**
+ * Login form logic.
+ * Only runs if we are on the index.html page (where 'login-form' exists).
+ */
+const loginForm = document.getElementById('login-form');
 
-if(formLogin){
-    // Carrega logo os dados assim que a página abre
-    carregarBaseDeDados();
+if (loginForm) {
+    // Loads the data as soon as the page opens
+    loadDatabase();
 
-    //Fica à escuta do clique no botão "Entrar" (evento 'submit')
-    formLogin.addEventListener('submit', async function (evento) {
-        //Impede a página de recarregar (compartamento padrão do HTML)
-        evento.preventDefault();
+    // Listens for the click on the "Sign In" button ('submit' event)
+    loginForm.addEventListener('submit', async function (event) {
+        // Prevents the page from reloading (default HTML behavior)
+        event.preventDefault();
 
-        //Lê o que o utilizador escreveu nos inputs (.trim() remove espaços extra)
-        const emailDigitado = document.getElementById('email').value.trim();
-        const passwordDigitada = document.getElementById('password').value.trim();
-        const caixaErro = document.getElementById('mensagem-erro');
+        // Reads what the user typed in the inputs (.trim() removes extra spaces)
+        const typedEmail = document.getElementById('email').value.trim();
+        const typedPassword = document.getElementById('password').value.trim();
+        const errorBox = document.getElementById('error-message');
 
-        //Vai buscar a base de dados (JSON)
-        const db = await carregarBaseDeDados();
+        // Fetches the database (JSON)
+        const db = await loadDatabase();
 
-        //Procura na lista 'utilizadores' alguém com o mesmo email e password
-        const utilizador = db.utilizadores.find(
-            (u) => u.email === emailDigitado && u.password === passwordDigitada
+        // Searches the 'users' list for someone with the same email AND password
+        const user = db.users.find(
+            (u) => u.email === typedEmail && u.password === typedPassword
         );
 
-        // Se não encontrar, mostra erro e para aqui
-        if (!utilizador){
-            caixaErro.textContent = 'E-mail ou palavra-passe incorretos.';
-            caixaErro.classList.remove('d-none'); //Torna a caixa vermelha vísivel
+        // If not found, shows an error and stops here
+        if (!user) {
+            errorBox.textContent = 'Incorrect email or password.';
+            errorBox.classList.remove('d-none'); // Makes the red box visible
             return;
         }
 
-        //Verifica se a conta está ativa
-        if (!utilizador.ativo){
-            caixaErro.textContent = 'Esta conta encontra-se desativada.';
-            caixaErro.classList.remove('d-none');
+        // Checks if the account is active
+        if (!user.active) {
+            errorBox.textContent = 'This account is disabled.';
+            errorBox.classList.remove('d-none');
             return;
         }
 
-        //Vai buscar o nome do perfil (Admin ou Gestor) à tabela 'perfis' usando o perfil_id
-        const perfil = db.perfis.find((p) => p.id === utilizador.perfil_id);
+        // Fetches the profile name (Admin or Manager) from the 'profiles' table using profile_id
+        const profile = db.profiles.find((p) => p.id === user.profile_id);
 
-        //Cria um objeto de sessão com os dados necessários para o Dashboard
-        const sessao = {
-            id: utilizador.id,
-            nome: utilizador.nome,
-            email: utilizador.email,
-            perfil_id: utilizador.perfil_id,
-            perfil_nome: perfil ? perfil.nome : 'Desconhecido'
+        // Creates a session object with the necessary data for the Dashboard
+        const session = {
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            profile_id: user.profile_id,
+            profile_name: profile ? profile.name : 'Unknown'
         };
 
-        //Guarda a sessão ativa no sessionStorage (apaga-se quando fechas o separador)
-        sessionStorage.setItem(SESSION_KEY, JSON.stringify(sessao));
+        // Saves the active session in sessionStorage (cleared when you close the tab)
+        sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
 
-        //Redireciona o utilizador para o painel principal
-        window.location.href = 'dashboard.html'
+        // Redirects the user to the main dashboard
+        window.location.href = 'dashboard.html';
     });
 }
 
-// Funções auxiliares para o dashboard.html
-function obterUtilizadorLogado(){
-    const sessaoTexto = sessionStorage.getItem(SESSION_KEY);
-    if (!sessaoTexto){
-        //Se alguém tentar abrir o dashboard.html sem fazer login, volta para o index.html
+// Helper functions we will use in dashboard.html
+
+function getLoggedInUser() {
+    const sessionText = sessionStorage.getItem(SESSION_KEY);
+    if (!sessionText) {
+        // If someone tries to open dashboard.html without logging in, goes back to index.html
         window.location.href = 'index.html';
         return null;
     }
-    return JSON.parse(sessaoTexto);
+    return JSON.parse(sessionText);
 }
 
-function terminarSessao() {
+function logout() {
     sessionStorage.removeItem(SESSION_KEY);
     window.location.href = 'index.html';
 }

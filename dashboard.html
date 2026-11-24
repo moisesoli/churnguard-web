@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChurnGuard — Control Panel</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons (for menu and button icons) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Our CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Main container: places the Sidebar on the left and Content on the right -->
+    <div class="d-flex">
+
+        <!-- 1. SIDEBAR -->
+        <nav class="sidebar d-flex flex-column">
+            <div class="p-3 border-bottom border-secondary">
+                <h5 class="fw-bold text-white mb-0">ChurnGuard</h5>
+                <small class="text-info">Decision Support</small>
+            </div>
+
+            <div class="sidebar-group-title">Operations</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <!-- Calls switchView indicating which section this button will open -->
+                    <a class="nav-link active" onclick="switchView('monitoring', this)">
+                        <i class="bi bi-speedometer2 me-2"></i> Monitoring & Risk
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchView('retention', this)">
+                        <i class="bi bi-shield-check me-2"></i> Retention Actions
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Administrative section (visibility controlled by profile in JS) -->
+            <div id="admin-menu-group">
+                <div class="sidebar-group-title">Administration</div>
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="switchView('users', this)">
+                            <i class="bi bi-people me-2"></i> Users & Profiles
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="sidebar-group-title">HCI Quality</div>
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" onclick="switchView('telemetry', this)">
+                        <i class="bi bi-stopwatch me-2"></i> Usability Logs
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 2. MAIN AREA (HEADER + CONTENT) -->
+        <div class="flex-grow-1 d-flex flex-column">
+
+            <!-- Top Navbar -->
+            <header class="bg-white border-bottom px-4 py-3 d-flex justify-content-between align-items-center">
+                <span id="page-title" class="fw-semibold text-dark">Monitoring & Risk Diagnosis</span>
+
+                <div class="d-flex align-items-center gap-3">
+                    <div class="text-end">
+                        <!-- Automatically filled by JS with session data -->
+                        <div id="user-name" class="fw-semibold small text-dark">Loading...</div>
+                        <span id="user-profile" class="badge bg-primary-subtle text-primary small">Profile</span>
+                    </div>
+                    <button onclick="logout()" class="btn btn-outline-danger btn-sm">
+                        <i class="bi bi-box-arrow-right"></i> Logout
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Content (the 4 system views) -->
+            <main class="p-4">
+
+                <!-- VIEW 1: MONITORING AND DIAGNOSIS (Starts visible) -->
+                <section id="view-monitoring" class="view-section">
+                    <!-- Summary Cards (KPIs) -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm p-3">
+                                <small class="text-muted">Total Clients</small>
+                                <h3 id="kpi-total" class="fw-bold mb-0 mt-1">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm p-3">
+                                <small class="text-muted">Critical Risk</small>
+                                <h3 id="kpi-critical" class="fw-bold text-danger mb-0 mt-1">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm p-3">
+                                <small class="text-muted">Medium Risk</small>
+                                <h3 id="kpi-medium" class="fw-bold text-warning mb-0 mt-1">0</h3>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 shadow-sm p-3">
+                                <small class="text-muted">Average Churn Score</small>
+                                <h3 id="kpi-avg-score" class="fw-bold text-primary mb-0 mt-1">0%</h3>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Client Diagnosis Table -->
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+                            <h6 class="fw-bold mb-0">Risk Diagnosis by Client</h6>
+                            <!-- Quick filter by risk level -->
+                            <select id="risk-filter" class="form-select form-select-sm w-auto">
+                                <option value="All">All Levels</option>
+                                <option value="Critical">Critical Only</option>
+                                <option value="Medium">Medium Only</option>
+                                <option value="Low">Low Only</option>
+                            </select>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light small">
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Plan</th>
+                                        <th>Usage (min)</th>
+                                        <th>Error Tickets</th>
+                                        <th>CSAT</th>
+                                        <th class="calculated-column">Churn Score</th>
+                                        <th class="calculated-column">Risk Level</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <!-- JS will populate this tbody in the next step -->
+                                <tbody id="clients-table-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW 2: RETENTION ACTIONS (Starts hidden with d-none) -->
+                <section id="view-retention" class="view-section d-none">
+                    <div class="card border-0 shadow-sm p-4">
+                        <h6 class="fw-bold mb-3">Retention Interventions History</h6>
+                        <p class="text-muted small">Actions registered by managers will appear here.</p>
+                    </div>
+                </section>
+
+                <!-- VIEW 3: USERS AND PROFILES (Starts hidden with d-none) -->
+                <section id="view-users" class="view-section d-none">
+                    <div class="card border-0 shadow-sm p-4">
+                        <h6 class="fw-bold mb-3">Users and Profiles Management (RBAC)</h6>
+                        <p class="text-muted small">We will list the users and profiles from the JSON here.</p>
+                    </div>
+                </section>
+
+                <!-- VIEW 4: HCI TELEMETRY (Starts hidden with d-none) -->
+                <section id="view-telemetry" class="view-section d-none">
+                    <div class="card border-0 shadow-sm p-4">
+                        <h6 class="fw-bold mb-3">Efficiency & Decision Time Logs</h6>
+                        <p class="text-muted small">We will record the time the manager takes to decide here.</p>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Imports auth.js first (to check if the user is logged in) -->
+    <script src="js/auth.js"></script>
+    <!-- Imports app.js next (dashboard logic) -->
+    <script src="js/app.js"></script>
+</body>
+</html>

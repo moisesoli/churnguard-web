@@ -1,65 +1,65 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- Garante que a página se adapta bem a ecrãs pequenos (telemóveis/tablets) -->
+    <!-- Ensures the page adapts well to small screens (mobile/tablets) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChurnGuard — Login</title>
 
-    <!-- Importa o CSS do Bootstrap 5 diretamente da internet (CDN) -->
+    <!-- Imports Bootstrap 5 CSS directly from the internet (CDN) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Importa o nosso ficheiro de estilos (vamos preencher mais à frente) -->
+    <!-- Imports our stylesheet -->
     <link rel="stylesheet" href="css/style.css">
 </head>
-<!-- bg-light dá fundo cinzento claro; d-flex + vh-100 centra o cartão no meio do ecrã -->
+<!-- bg-light gives a light gray background; d-flex + vh-100 centers the card in the middle of the screen -->
 <body class="bg-light d-flex align-items-center justify-content-center vh-100">
 
-    <!-- Cartão principal do formulário de Login -->
+    <!-- Main login form card -->
     <div class="card shadow-sm p-4" style="width: 100%; max-width: 400px;">
         
-        <!-- Cabeçalho do cartão -->
+        <!-- Card header -->
         <div class="text-center mb-4">
             <h3 class="fw-bold text-primary mb-1">ChurnGuard</h3>
-            <p class="text-muted small">Apoio à Decisão & Retenção</p>
+            <p class="text-muted small">Decision Support & Retention</p>
         </div>
 
-        <!-- Caixa de erro: começa escondida (d-none) e só aparece se o login falhar -->
-        <div id="mensagem-erro" class="alert alert-danger d-none py-2 small" role="alert"></div>
+        <!-- Error box: starts hidden (d-none) and only appears if login fails -->
+        <div id="error-message" class="alert alert-danger d-none py-2 small" role="alert"></div>
 
-        <!-- Formulário de autenticação -->
-        <form id="form-login">
+        <!-- Authentication form -->
+        <form id="login-form">
             <div class="mb-3">
-                <label for="email" class="form-label small fw-semibold">E-mail</label>
-                <!-- O atributo 'required' impede de submeter vazio -->
+                <label for="email" class="form-label small fw-semibold">Email</label>
+                <!-- The 'required' attribute prevents submitting empty -->
                 <input type="email" id="email" class="form-control" placeholder="moises@churnguard.com" required>
             </div>
 
             <div class="mb-3">
-                <label for="password" class="form-label small fw-semibold">Palavra-passe</label>
+                <label for="password" class="form-label small fw-semibold">Password</label>
                 <input type="password" id="password" class="form-control" placeholder="123" required>
             </div>
 
             <button type="submit" class="btn btn-primary w-100 fw-semibold mt-2">
-                Entrar
+                Sign In
             </button>
         </form>
 
         <hr class="my-3">
 
-        <!-- Atalhos para testares rapidamente sem escreveres sempre o e-mail -->
+        <!-- Shortcuts for quick testing without typing the email every time -->
         <div class="text-center">
-            <small class="text-muted d-block mb-2">Preenchimento rápido (TP1):</small>
-            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="preencherDemo('moises@churnguard.com')">
-                Gestor (Moisés)
+            <small class="text-muted d-block mb-2">Quick fill (TP1):</small>
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="fillDemo('moises@churnguard.com')">
+                Manager (Moisés)
             </button>
-            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="preencherDemo('admin@churnguard.com')">
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="fillDemo('admin@churnguard.com')">
                 Admin
             </button>
         </div>
     </div>
 
-    <!-- Carrega o nosso JavaScript de autenticação no final do body -->
+    <!-- Loads our authentication JavaScript at the end of the body -->
     <script src="js/auth.js"></script>
 </body>
 </html>
